@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:15.3-alpine3.18
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
