@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify';
-import { addImage, findAllImages } from './service';
+import { FastifyInstance, FastifyRequest } from 'fastify';
+import { addImage, deleteImage, findAllImages } from './service';
 import { response } from '@lib';
 import { adminAuth } from '@hooks';
 
@@ -28,6 +28,23 @@ export const imagesRoute = async (fastifyApp: FastifyInstance) => {
       const resp = response.failure(result.reason);
 
       return rep.status(403).send(resp);
+    }
+
+    const resp = response.success(result.data);
+
+    return rep.send(resp);
+  });
+
+  fastifyApp.delete('/:id', async (
+    req: FastifyRequest<{ Params: { id: string } }>,
+    rep
+  ) => {
+    const result = await deleteImage(req.params.id);
+
+    if (!result.success) {
+      const resp = response.failure(result.reason);
+
+      return rep.status(404).send(resp);
     }
 
     const resp = response.success(result.data);

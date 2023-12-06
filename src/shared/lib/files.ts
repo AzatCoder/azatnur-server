@@ -5,8 +5,16 @@ import { pipeline } from 'stream';
 import { BusboyFileStream } from '@fastify/busboy';
 import { staticPath } from '@lib';
 
-const pump = util.promisify(pipeline);
-
 export const createFile = async (file: BusboyFileStream, fileName: string) => {
-  await pump(file, fs.createWriteStream(path.join(staticPath, fileName)));
+  const pump = util.promisify(pipeline);
+  const fileLocation = path.join(staticPath, fileName);
+
+  return pump(file, fs.createWriteStream(fileLocation));
+}
+
+export const deleteFile = async (fileName: string) => {
+  const removeFile = util.promisify(fs.unlink);
+  const fileLocation = path.join(staticPath, fileName);
+
+  return removeFile(fileLocation);
 }

@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { BusboyFileStream } from '@fastify/busboy';
 import { prisma } from '@db';
-import { railway, createFile } from '@lib';
+import { railway, createFile, deleteFile } from '@lib';
 
 export const addImage = async ({
   file,
@@ -34,6 +34,20 @@ export const addImage = async ({
 
 export const findAllImages = async () => {
   const allImages = await prisma.image.findMany();
-  
+
   return railway.right(allImages);
+}
+
+export const deleteImage = async (id: string) => {
+  let deletedImage;
+
+  try {
+    deletedImage = await prisma.image.delete({ where: { id } });
+  } catch {
+    return railway.left(`No such image with id: ${id}`);
+  }
+
+  await deleteFile(deletedImage.fileName);
+
+  return railway.right(deletedImage);
 }
